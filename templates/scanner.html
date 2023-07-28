@@ -1,0 +1,287 @@
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>DeepGuard </title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="static/img/favicon.png" rel="icon">
+  <link href="static/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600;1,700&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='vendor/glightbox/css/glightbox.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='vendor/swiper/swiper-bundle.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='vendor/aos/aos.css') }}" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="static/css/main.css" rel="stylesheet" media="all">
+</head>
+ <!-- ======= Header ======= -->
+ <header id="header" class="header d-flex align-items-center fixed-top">
+    <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
+
+      <a href="index.html" class="logo d-flex align-items-center">
+        <!-- Uncomment the line below if you also wish to use an image logo -->
+        <!-- <img src="assets/img/logo.png" alt=""> -->
+        <h1>DeepGuard</h1>
+      </a>
+
+      <i class="mobile-nav-toggle mobile-nav-show bi bi-list"></i>
+      <i class="mobile-nav-toggle mobile-nav-hide d-none bi bi-x"></i>
+      <nav id="navbar" class="navbar">
+        <ul>
+          <li><a href="http://127.0.0.1:5502/index.html" class="active">Home</a></li>
+          <li><a href="http://127.0.0.1:5502/about.html">About</a></li>
+          
+          <li><a class="get-a-quote" href="http://127.0.0.1:5000/">Scanner</a></li>
+        </ul>
+      </nav><!-- .navbar -->
+
+    </div>
+  </header><!-- End Header -->
+  <!-- End Header -->
+  <main id="main">
+
+    <!-- ======= Breadcrumbs ======= -->
+    <div class="breadcrumbs">
+      <div class="page-header d-flex align-items-center" style="background-image: url('static/img/imagedeep.png');">
+        <div class="container position-relative">
+          <div class="row d-flex justify-content-center">
+            <div class="col-lg-6 text-center">
+              
+          </div>
+        </div>
+      </div>
+      
+    </div><!-- End Breadcrumbs -->
+
+   <!-- ======= Scanner Section ======= -->
+   <section id="about" class="about">
+    <div class="container" data-aos="fade-up">
+      <div class="row gy-4 justify-content-center">
+        <div class="col-lg-6">
+          <div class="image-section">
+            <div class="img-preview">
+              <div id="imagePreview"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6 content">
+          <div class="text-center">
+            <h3>DeepFake Images & Videos Detector</h3>
+            <form id="upload-file" method="post" enctype="multipart/form-data">
+              <div class="form-group">
+                <label for="fileUpload" class="upload-label">
+                  Choose an Image or Video!
+                </label>
+                <input type="file" name="file" id="fileUpload" accept="image/* , video/*" onchange="previewFile(event)" class="form-control-file">            
+                <button type="button" class="btn btn-primary" id="btn-predict">Predict</button>
+              </div>
+            </form>
+          </div>
+          <div class="result-section">
+            <h3>Prediction Result:</h3>
+            <div id="result-container" style="height: 100px; overflow: auto;">
+              <p id="result" style="font-family: 'Poppins'; font-size:32px;"></p>
+            </div>
+          </div>
+          <div class="progress-section">
+            <div class="progress">
+              <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                <span class="sr-only">Processing...</span>
+              </div>
+            </div>
+            <p id="progress-message"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <script>
+    // display image or video preview when a file is selected
+    function previewFile(event) {
+      var preview = document.getElementById('imagePreview');
+      var file = document.querySelector('input[name="file"]').files[0];
+  
+      if (file.type.startsWith('image')) {
+        var reader = new FileReader();
+        reader.addEventListener("load", function() {
+          preview.innerHTML = '<img src="' + reader.result + '" width="300" height="300"/>';
+        }, false);
+        reader.readAsDataURL(file);
+      } else if (file.type.startsWith('video')) {
+        var video = document.createElement('video');
+        video.width = 300;
+        video.height = 300;
+        video.controls = true;
+        video.autoplay = true;
+        var videoUrl = URL.createObjectURL(file);
+        video.src = videoUrl;
+        video.load(); // Call load() to ensure the video is ready to play
+        preview.appendChild(video);
+      }
+  
+      document.querySelector('.image-section').style.display = "block";
+      // show the predict button after the file is uploaded
+      document.querySelector('#btn-predict').style.display = "block";
+      // hide the prediction result after a new file is uploaded
+      document.querySelector('.result-section').style.display = "none";
+    }
+  
+    const btnPredict = document.getElementById('btn-predict');
+    const form = document.getElementById('upload-file');
+    const fileUpload = document.getElementById('fileUpload');
+    const resultText = document.getElementById('result');
+  
+    // Disable the "Predict!" button when clicked
+    btnPredict.addEventListener('click', () => {
+      btnPredict.disabled = true;
+    });
+  
+    // Enable the "Predict!" button when the prediction is done
+    form.addEventListener('submit', () => {
+      // Do your prediction here
+  
+      // Enable the "Predict!" button
+      btnPredict.disabled = false;
+    });
+  
+    // Enable the "Predict!" button when the user selects a different file
+    fileUpload.addEventListener('click', () => {
+      btnPredict.disabled = false;
+    });
+  
+    // Enable the "Predict!" button when the prediction is done
+    form.addEventListener('submit', () => {
+      setTimeout(() => {
+        btnPredict.disabled = false;
+      }, 3000); // Change this value to the time it takes for your prediction to complete
+    });
+  
+    // predict file when predict button is clicked
+    document.getElementById('btn-predict').addEventListener('click', function() {
+      var form_data = new FormData(document.getElementById('upload-file'));
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', '/predict', true);
+  
+      xhr.upload.onprogress = function(event) {
+        if (event.lengthComputable) {
+          var percentComplete = (event.loaded / event.total) * 100;
+          document.querySelector('.progress-bar').style.width = percentComplete + '%';
+          document.querySelector('.sr-only').textContent = 'Processing... ' + percentComplete.toFixed(0) + '%';
+        }
+      };
+  
+      xhr.onloadstart = function(event) {
+        // show the progress bar when prediction starts
+        document.querySelector('.progress-bar').style.width = '0%';
+        document.querySelector('.sr-only').textContent = 'Processing...';
+        document.querySelector('.progress-section').style.display = "block";
+      };
+  
+      xhr.onload = function() {
+        if (xhr.readyState === xhr.DONE) {
+          if (xhr.status === 200) {
+            var response = xhr.response;
+            resultText.innerHTML = response;
+            // change the color of the prediction result based on its value
+            if (response === 'Fake') {
+              resultText.style.color = 'red';
+            } else if (response === 'Real') {
+              resultText.style.color = 'green';
+            }
+            // hide the progress bar once the prediction is complete
+            document.querySelector('.progress-section').style.display = "none";
+            // display the prediction result
+            document.querySelector('.result-section').style.display = "block";
+          }
+        }
+      };
+  
+      xhr.send(form_data);
+    });
+  </script>
+<footer id="footer" class="footer">
+
+    <div class="container">
+      <div class="row gy-4">
+        <div class="col-lg-5 col-md-12 footer-info">
+          <a href="index.html" class="logo d-flex align-items-center">
+            <span>DeepGuard</span>
+          </a>
+          <p>Our deep fake detection tool Deep Guard is a powerful resource for identifying manipulated images and videos in today's digital landscape.</p>
+          <div class="social-links d-flex mt-4">
+            <a href="#" class="twitter"><i class="bi bi-twitter"></i></a>
+            <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
+            <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
+            <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
+          </div>
+        </div>
+
+        <div class="col-lg-2 col-6 footer-links">
+          <h4>Useful Links</h4>
+          <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">About us</a></li>
+          </ul>
+        </div>
+
+        
+
+        <div class="col-lg-3 col-md-12 footer-contact text-center text-md-start">
+          <h4>Contact Us</h4>
+          <p>
+            <br>
+            Nasr City
+            <br>
+            Cairo, Egypt <br><br>
+            <strong>Phone:</strong> +02 015589 55488 <br>
+            <strong>Email:</strong> deepguard@gmail.com<br>
+          </p>
+
+        </div>
+
+      </div>
+    </div>
+
+    <div class="container mt-4">
+      <div class="copyright">
+        &copy; Copyright <strong><span>DeepGuard</span></strong>. All Rights Reserved
+      </div>
+      
+    </div>
+
+  </footer><!-- End Footer -->
+  <!-- End Footer -->
+
+  <a href="#" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <div id="preloader"></div>
+
+  <!-- Vendor JS Files -->
+  <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendor/purecounter/purecounter_vanilla.js') }}"></script>
+<script src="{{ url_for('static', filename='vendor/glightbox/js/glightbox.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendor/swiper/swiper-bundle.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendor/aos/aos.js') }}"></script>
+<script src="{{ url_for('static', filename='vendor/php-email-form/validate.js') }}"></script>
+  <!-- Template Main JS File -->
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</html>
+
+
+
+
